@@ -1,0 +1,7 @@
+package-lock.json
+node_modules/*
+.env
+# Keep environment variables out of version control
+.dockerignore
+Dockerfile
+body.json

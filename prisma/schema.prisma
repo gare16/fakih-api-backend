@@ -1,0 +1,46 @@
+// schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // atau "mysql", tergantung database kamu
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  Pelanggan
+  Petugas
+  Admin
+}
+
+enum Status {
+  Belum_Dibayar
+  Sudah_Dibayar
+}
+
+model users {
+  id         Int      @id @default(autoincrement())
+  nik        String   @unique
+  nama       String
+  email      String   @unique
+  password   String
+  alamat     String
+  role       Role
+  created_at DateTime @default(now())
+  bills      bills[]
+}
+
+model bills {
+  id            Int      @id @default(autoincrement())
+  id_user       Int
+  catatan_awal  Decimal  @db.Decimal(10, 2)
+  catatan_akhir Decimal  @db.Decimal(10, 2)
+  pemakaian     Decimal  @db.Decimal(10, 2)
+  file_foto     String
+  status        Status
+  created_at    DateTime @default(now())
+
+  user          users    @relation(fields: [id_user], references: [id])
+}
