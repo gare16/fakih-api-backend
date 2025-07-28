@@ -17,7 +17,39 @@ export const createBillHandler = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const bill = await prisma.bills.create({
+    const now = new Date();
+    const startOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      1,
+      0,
+      0,
+      0
+    );
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
+
+    const existingBill = await prisma.bills.findFirst({
+      where: {
+        id_user: parseInt(id_user),
+        created_at: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+      },
+    });
+
+    if (existingBill) {
+      return res.status(400).json({ message: "Tagihan bulan ini sudah ada" });
+    }
+
+    await prisma.bills.create({
       data: {
         id_user: parseInt(id_user),
         catatan_awal: parseFloat(catatan_awal),
@@ -28,7 +60,7 @@ export const createBillHandler = async (req, res) => {
       },
     });
 
-    res.status(201).json(bill);
+    res.status(201).json({ message: "Data berhasil dibuat" });
   } catch (err) {
     console.error("Create Bill Error:", err);
     res.status(500).json({ message: "Gagal tambah tagihan" });

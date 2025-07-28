@@ -12,7 +12,11 @@ import {
 } from "../controllers/UploadController.js";
 import { verifyAuth } from "../middleware/verifyToken.js";
 import cookieParser from "cookie-parser";
-import { getBills, getTotals } from "../controllers/BillController.js";
+import {
+  getBills,
+  getMonthlyUsageSummary,
+  getTotalWeb,
+} from "../controllers/BillController.js";
 import { upload } from "../middleware/upload.js";
 
 const router = express.Router();
@@ -21,7 +25,8 @@ app.use(cookieParser());
 
 // Bill Router
 router.get("/bills", verifyAuth, getBills);
-router.get("/bills/total", verifyAuth, getTotals);
+router.get("/bills/total/web", verifyAuth, getTotalWeb);
+router.get("/bills/total/mobile", verifyAuth, getMonthlyUsageSummary);
 router.post(
   "/bills",
   verifyAuth,
@@ -37,6 +42,6 @@ router.patch("/users/:id", verifyAuth, updateUser);
 router.get("/users", verifyAuth, getUsers);
 
 // File Router
-router.get("/view/image/:id", verifyAuth, imageViewer);
+router.get("/view/image/:id", imageViewer);
 
 export default router;
