@@ -14,6 +14,7 @@ import { verifyAuth } from "../middleware/verifyToken.js";
 import cookieParser from "cookie-parser";
 import {
   getBills,
+  getInvoice,
   getMonthlyUsageSummary,
   getTotalWeb,
 } from "../controllers/BillController.js";
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 // Bill Router
 router.get("/bills", verifyAuth, getBills);
+router.get("/bills/:id", getInvoice);
 router.get("/bills/total/web", verifyAuth, getTotalWeb);
 router.get("/bills/total/mobile", verifyAuth, getMonthlyUsageSummary);
 router.post(

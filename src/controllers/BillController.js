@@ -43,7 +43,7 @@ export const getBills = async (req, res) => {
     });
 
     const dataDenganTagihan = billsWithTagihan.map((bill) => {
-      const pemakaian = Number(bill.pemakaian);
+      const pemakaian = Number(billsWithTagihanpemakaian);
       const bebanTetap = 5000;
 
       const usage0To10 = Math.min(pemakaian, 10);
@@ -57,10 +57,10 @@ export const getBills = async (req, res) => {
       const totalPayment = bebanTetap + cost0To10 + cost11To20 + costAbove20;
 
       return {
-        id: bill.id,
-        customerName: bill.user.nama,
-        startReading: bill.catatan_awal,
-        endReading: bill.catatan_akhir,
+        id: billsWithTagihanid,
+        customerName: billsWithTagihanuser.nama,
+        startReading: billsWithTagihancatatan_awal,
+        endReading: billsWithTagihancatatan_akhir,
         usage: pemakaian,
         usage0To10,
         usage11To20,
@@ -70,13 +70,62 @@ export const getBills = async (req, res) => {
         cost11To20,
         costAbove20,
         totalPayment,
-        status: bill.status,
-        proof: bill.file_foto,
-        created_at: bill.created_at,
+        status: billsWithTagihanstatus,
+        proof: billsWithTagihanfile_foto,
+        created_at: billsWithTagihancreated_at,
       };
     });
 
     res.status(200).json({ result: dataDenganTagihan });
+  } catch (error) {
+    console.error("Error retrieving bills:", error);
+    res.status(500).send("Error retrieving bills");
+  }
+};
+
+export const getInvoice = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const billsWithTagihan = await prisma.bills.findFirstOrThrow({
+      where: {
+        id: parseInt(id),
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    const pemakaian = Number(billsWithTagihan.pemakaian);
+    const bebanTetap = 5000;
+
+    const usage0To10 = Math.min(pemakaian, 10);
+    const usage11To20 = Math.min(Math.max(pemakaian - 10, 0), 10);
+    const usageAbove20 = Math.max(pemakaian - 20, 0);
+
+    const cost0To10 = usage0To10 * 500;
+    const cost11To20 = usage11To20 * 600;
+    const costAbove20 = usageAbove20 * 700;
+
+    const totalPayment = bebanTetap + cost0To10 + cost11To20 + costAbove20;
+
+    res.status(200).json({
+      id: billsWithTagihan.id,
+      customerName: billsWithTagihan.user.name,
+      startReading: billsWithTagihan.catatan_awal,
+      endReading: billsWithTagihan.catatan_akhir,
+      usage: pemakaian,
+      usage0To10,
+      usage11To20,
+      usageAbove20,
+      baseCharge: bebanTetap,
+      cost0To10,
+      cost11To20,
+      costAbove20,
+      totalPayment,
+      status: billsWithTagihan.status,
+      proof: billsWithTagihan.file_foto,
+      created_at: billsWithTagihan.created_at,
+    });
   } catch (error) {
     console.error("Error retrieving bills:", error);
     res.status(500).send("Error retrieving bills");
@@ -107,7 +156,7 @@ export async function getTotalWeb(req, res) {
     });
 
     const dataDenganTagihan = bills.map((bill) => {
-      const pemakaian = Number(bill.pemakaian);
+      const pemakaian = Number(billsWithTagihanpemakaian);
       const bebanTetap = 5000;
 
       const usage0To10 = Math.min(pemakaian, 10);
@@ -126,12 +175,12 @@ export async function getTotalWeb(req, res) {
     });
 
     const totalTagihan = dataDenganTagihan.reduce((total, bill) => {
-      return total + bill.totalPayment;
+      return total + billsWithTagihantotalPayment;
     }, 0);
 
     // 3. Menghitung Total Pemakaian Bulan Ini
     const totalPemakaian = bills.reduce((total, bill) => {
-      return total + parseFloat(bill.pemakaian.toString());
+      return total + parseFloat(billsWithTagihanpemakaian.toString());
     }, 0);
 
     const query = `SELECT substring(e.x, 1, 2) as "month" ,count(a.id) as data 
