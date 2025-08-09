@@ -73,11 +73,11 @@ export const login = async (req, res) => {
 };
 
 export async function getUsers(req, res) {
-  const { role } = req.query;
+  const { name } = req.query;
 
   try {
     const users = await prisma.users.findMany({
-      where: role ? { role } : undefined,
+      where: name ? { name } : undefined,
       select: {
         id: true,
         nik: true,
