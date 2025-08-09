@@ -13,10 +13,12 @@ import {
 import { verifyAuth } from "../middleware/verifyToken.js";
 import cookieParser from "cookie-parser";
 import {
+  deleteBill,
   getBills,
   getInvoice,
   getMonthlyUsageSummary,
   getTotalWeb,
+  updateStatus,
 } from "../controllers/BillController.js";
 import { upload } from "../middleware/upload.js";
 
@@ -35,6 +37,8 @@ router.post(
   upload.single("file_foto"),
   createBillHandler
 );
+router.patch("/bills/:id", updateStatus);
+router.delete("/bills/:id", deleteBill);
 
 // User Router
 router.post("/auth/register", createUser);

@@ -309,3 +309,59 @@ function handleHitungTotalTagihan(pemakaian) {
 
   return totalPayment;
 }
+
+export const updateStatus = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const bill = await prisma.bills.findFirstOrThrow({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    if (bill.status === "Sudah_Dibayar") {
+      res
+        .status(200)
+        .json({ message: "Tidak Ada Perubahan Dikarenakan Sudah Dibayar" });
+    } else {
+      await prisma.bills.update({
+        where: { id: parseInt(id) },
+        data: { status: "Sudah_Dibayar" },
+      });
+
+      res.status(200).json({ message: "Status Berhasil Diubah" });
+    }
+  } catch (error) {
+    console.error("Gagal update status:", error);
+    res.status(400).json({ error: "Gagal update status" });
+  }
+};
+
+export const deleteBill = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const bill = await prisma.bills.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!bill) {
+      return res.status(404).json({ message: "Tidak Ada Tagihan" });
+    }
+
+    await prisma.bills.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    res.status(200).json({ message: "Data Berhasil Dihapus" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "Terjadi Kesalahan Server", error: error.message });
+  }
+};
