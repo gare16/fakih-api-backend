@@ -43,7 +43,7 @@ export const getBills = async (req, res) => {
     });
 
     const dataDenganTagihan = billsWithTagihan.map((bill) => {
-      const pemakaian = Number(billsWithTagihanpemakaian);
+      const pemakaian = Number(bill.pemakaian);
       const bebanTetap = 5000;
 
       const usage0To10 = Math.min(pemakaian, 10);
@@ -57,10 +57,10 @@ export const getBills = async (req, res) => {
       const totalPayment = bebanTetap + cost0To10 + cost11To20 + costAbove20;
 
       return {
-        id: billsWithTagihanid,
-        customerName: billsWithTagihanuser.nama,
-        startReading: billsWithTagihancatatan_awal,
-        endReading: billsWithTagihancatatan_akhir,
+        id: bill.id,
+        customerName: bill.user.nama,
+        startReading: bill.catatan_awal,
+        endReading: bill.catatan_akhir,
         usage: pemakaian,
         usage0To10,
         usage11To20,
@@ -70,9 +70,9 @@ export const getBills = async (req, res) => {
         cost11To20,
         costAbove20,
         totalPayment,
-        status: billsWithTagihanstatus,
-        proof: billsWithTagihanfile_foto,
-        created_at: billsWithTagihancreated_at,
+        status: bill.status,
+        proof: bill.file_foto,
+        created_at: bill.created_at,
       };
     });
 
@@ -110,7 +110,7 @@ export const getInvoice = async (req, res) => {
 
     res.status(200).json({
       id: billsWithTagihan.id,
-      customerName: billsWithTagihan.user.name,
+      customerName: billsWithTagihan.user.nama,
       startReading: billsWithTagihan.catatan_awal,
       endReading: billsWithTagihan.catatan_akhir,
       usage: pemakaian,
@@ -156,7 +156,7 @@ export async function getTotalWeb(req, res) {
     });
 
     const dataDenganTagihan = bills.map((bill) => {
-      const pemakaian = Number(billsWithTagihanpemakaian);
+      const pemakaian = Number(billsWithTagihan.pemakaian);
       const bebanTetap = 5000;
 
       const usage0To10 = Math.min(pemakaian, 10);
@@ -175,12 +175,12 @@ export async function getTotalWeb(req, res) {
     });
 
     const totalTagihan = dataDenganTagihan.reduce((total, bill) => {
-      return total + billsWithTagihantotalPayment;
+      return total + billsWithTagihan.totalPayment;
     }, 0);
 
     // 3. Menghitung Total Pemakaian Bulan Ini
     const totalPemakaian = bills.reduce((total, bill) => {
-      return total + parseFloat(billsWithTagihanpemakaian.toString());
+      return total + parseFloat(billsWithTagihan.pemakaian.toString());
     }, 0);
 
     const query = `SELECT substring(e.x, 1, 2) as "month" ,count(a.id) as data 
