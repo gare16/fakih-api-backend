@@ -156,7 +156,7 @@ export async function getTotalWeb(req, res) {
     });
 
     const dataDenganTagihan = bills.map((bill) => {
-      const pemakaian = Number(billsWithTagihan.pemakaian);
+      const pemakaian = Number(bill.pemakaian);
       const bebanTetap = 5000;
 
       const usage0To10 = Math.min(pemakaian, 10);
@@ -175,12 +175,12 @@ export async function getTotalWeb(req, res) {
     });
 
     const totalTagihan = dataDenganTagihan.reduce((total, bill) => {
-      return total + billsWithTagihan.totalPayment;
+      return total + bill.totalPayment;
     }, 0);
 
     // 3. Menghitung Total Pemakaian Bulan Ini
     const totalPemakaian = bills.reduce((total, bill) => {
-      return total + parseFloat(billsWithTagihan.pemakaian.toString());
+      return total + parseFloat(bill.pemakaian.toString());
     }, 0);
 
     const query = `SELECT substring(e.x, 1, 2) as "month" ,count(a.id) as data 
