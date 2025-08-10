@@ -2,7 +2,9 @@ import express from "express";
 import {
   changePassword,
   createUser,
+  deleteUser,
   getUsers,
+  getUsersByName,
   login,
   updateUser,
 } from "../controllers/UserController.js";
@@ -45,6 +47,7 @@ router.post("/auth/register", createUser);
 router.post("/auth/login", login);
 router.patch("/auth/change-password", verifyAuth, changePassword);
 router.patch("/users/:id", verifyAuth, updateUser);
+router.delete("/users/:id", verifyAuth, deleteUser);
 router.get("/users", verifyAuth, getUsers);
 router.get("/users/:nama", verifyAuth, getUsersByName);
 

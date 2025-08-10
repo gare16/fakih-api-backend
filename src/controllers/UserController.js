@@ -171,3 +171,17 @@ export const updateUser = async (req, res) => {
     res.send("err");
   }
 };
+
+export const deleteUser = async (req, res) => {
+  const id = req.params.id;
+  try {
+    await prisma.users.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+    res.status(200).json({ message: "deleted" });
+  } catch (error) {
+    res.status(400).json({ message: "delete gagal" });
+  }
+};
