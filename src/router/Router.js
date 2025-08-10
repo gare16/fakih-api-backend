@@ -46,6 +46,7 @@ router.post("/auth/login", login);
 router.patch("/auth/change-password", verifyAuth, changePassword);
 router.patch("/users/:id", verifyAuth, updateUser);
 router.get("/users", verifyAuth, getUsers);
+router.get("/users/:nama", verifyAuth, getUsersByName);
 
 // File Router
 router.get("/view/image/:id", imageViewer);

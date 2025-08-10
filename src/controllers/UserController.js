@@ -73,11 +73,11 @@ export const login = async (req, res) => {
 };
 
 export async function getUsers(req, res) {
-  const { name } = req.query;
+  const { role } = req.query;
 
   try {
     const users = await prisma.users.findMany({
-      where: name ? { name } : undefined,
+      where: role ? { role } : undefined,
       select: {
         id: true,
         nik: true,
@@ -91,7 +91,30 @@ export async function getUsers(req, res) {
     res.status(200).json({ result: users });
   } catch (error) {
     console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users" });
+    res.status(400).json({ error: "Failed to fetch users" });
+  }
+}
+
+export async function getUsersByName(req, res) {
+  const { nama } = req.params;
+
+  try {
+    const users = await prisma.users.findFirstOrThrow({
+      where: nama ? { nama } : undefined,
+      select: {
+        id: true,
+        nik: true,
+        nama: true,
+        email: true,
+        alamat: true,
+        role: true,
+      },
+    });
+
+    res.status(200).json({ result: users });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(400).json({ error: "Failed to fetch users" });
   }
 }
 
